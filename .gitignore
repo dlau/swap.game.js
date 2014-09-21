@@ -1,0 +1,9 @@
+.c9revisions
+node_modules
+.settings
+*.swp
+.DS_Store
+.nodemonignore
+v8.log
+.idea
+*.map
