@@ -48,7 +48,7 @@ var Body = React.createClass({
       });
     }.bind(this);
     return (
-      <div>
+      <div className="screen-container">
         {this.state.gameScreen({
           setGameScreen:setGameScreen,
           dimensions:this.state.dimensions

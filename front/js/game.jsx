@@ -81,17 +81,12 @@ var Grid = React.createClass({
       });
     });
   },
-  componentDidMount : function(){
-    setInterval(function(){
-      this.setState({
-        secondsElapsed : this.state.secondsElapsed + 1
-      });
-    }.bind(this), 1000);
-  },
   selectGridElement : function(x, y, e){
+    //this is really bad, find a better way to do this
+    var rect = e.target.parentElement.parentElement.getBoundingClientRect();
     var grid = this.state.grid;
-    var offsetX = e.pageX / GRID_ELEMENT_WIDTH - x;
-    var offsetY = e.pageY / GRID_ELEMENT_WIDTH - y;
+    var offsetX = (e.pageX - rect.left) / GRID_ELEMENT_WIDTH - x;
+    var offsetY = (e.pageY - rect.top) / GRID_ELEMENT_WIDTH - y;
     var offsets = [
       [{ xMin : 0.3, xMax : 0.7, yMin : 0.7, yMax :  1} , [x, y+1] ], //bottom
       [{ xMin : 0.3, xMax : 0.7, yMin :  0, yMax : 0.3} , [x, y-1] ], //top
@@ -149,6 +144,7 @@ var Grid = React.createClass({
       //clean the grid
       cleanFrom(grid, src[0], src[1], grid[src[0]][src[1]].color);
       cleanFrom(grid, dst[0], dst[1], grid[dst[0]][dst[1]].color);
+      this.props.onMove();
       return this.setState({
         grid : grid
       });
@@ -160,14 +156,14 @@ var Grid = React.createClass({
         {_.map(e, function(e, j){
           var style = {
             background : e.color,
-            left : GRID_ELEMENT_WIDTH * i,
-            top : GRID_ELEMENT_WIDTH * j
+            'margin-left' : GRID_ELEMENT_WIDTH * i,
+            'margin-top' : GRID_ELEMENT_WIDTH * j
           };
-          style.left = e.animateL ? style.left + e.animateL : style.left;
-          style.top = e.animateR ? style.top + e.animateR : style.top;
+          style['margin-left'] = e.animateL ? style['margin-left'] + e.animateL : style['margin-left'];
+          style['margin-top'] = e.animateR ? style['margin-top'] + e.animateR : style['margin-top'];
           return (
             <div
-              className={"grid-square"} 
+              className={"grid-square" +(e.color ? " bevel" : "")} 
               style={style} key={"grid-" + i + "-" + j}
               onClick={_.bind(this.selectGridElement, null, i, j)}
             >
@@ -176,31 +172,90 @@ var Grid = React.createClass({
         }.bind(this))}
         </div>
     }.bind(this));
-    var scoreboardStyle = {
-      left : GRID_ELEMENT_WIDTH * 10
+    var gridStyle = {
+      width : GRID_ELEMENT_WIDTH * 10,
+      height : GRID_ELEMENT_WIDTH * 10
     };
     return (
-      <div>
-        <div className="game-grid">
+      <div className="game-grid" style={gridStyle}>
         {gridElements}
-        </div>
-        <div className="game-scoreboard" style={scoreboardStyle}>
-          <ul className="game-scoreboard-listing">
-            <li>Swaps : {this.state.nMoves}</li>
-            <li>Time Taken : {this.state.secondsElapsed}</li>
-            <li> Colors : 3 </li>
-          </ul>
-        </div>
       </div>
     );
   }
 });
 
-var Game = React.createClass({
+var ScoreBoard = React.createClass({
+  render : function(){
+    var ms2pretty = function(elapsed){
+      var trans = [elapsed, 1000, 60, 60, 24, 365];
+      var tNames = ['ms', 's', 'm', 'h', 'd', 'y'];
+      var i,r;
+      for(i=1; i<trans.length; ++i){
+        r = Math.floor(trans[i-1] / trans[i]);
+        trans[i-1] %= trans[i];
+        trans[i] = r;
+      }
+      return _.filter(
+        _.map(trans,function(e,i){ return e ? e + tNames[i] : null; }),
+        function(e){ return e !== null; }
+      ).reverse().join(':');
+    };
+    return (
+      <div className="game-scoreboard">
+        <ul className="game-scoreboard-listing">
+          <li>Swaps : {this.props.nMoves}</li>
+          <li> Elapsed : {ms2pretty(this.props.secondsElapsed*1000)} </li>
+          <li> Colors : 3 </li>
+        </ul>
+      </div>
+    );
+  }
+});
+
+var Controls = React.createClass({
   render : function(){
     return (
+      <div className="game-controls">
+        <button>
+          Avalanche
+        </button>
+        <button>
+          Add square
+        </button>
+        <button disabled>
+          Done!
+        </button>
+      </div>
+      );
+  }
+});
+
+var Game = React.createClass({
+  getInitialState : function(){
+    return {
+      nMoves : 0,
+      secondsElapsed : 0
+    };
+  },
+  componentDidMount : function(){
+    setInterval(function(){
+      this.setState({
+        secondsElapsed : this.state.secondsElapsed + 1
+      });
+    }.bind(this), 1000);
+  },
+  render : function(){
+    //not optimized, tested w/ v8--this creates a new function expr everytime render is called ...
+    var onMove = function(e){
+      this.setState({ nMoves : this.state.nMoves + 1 });
+    }.bind(this);
+    return (
       <div>
-        <Grid />
+        <Grid onMove={onMove}/>
+        <div className="game-right">
+          <ScoreBoard nMoves={this.state.nMoves} secondsElapsed={this.state.secondsElapsed} />
+          <Controls />
+        </div>
       </div>
     );
   }

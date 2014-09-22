@@ -1,3 +1,10 @@
+body{
+  margin: 0;
+}
+
+.screen-container {
+  text-align : center;
+}
 
 .splash-continue {
   text-align : center;
@@ -14,16 +21,24 @@
   height: 30px;
   margin: 1px;
   border : 1px solid white;
+  &.bevel{
+    -webkit-box-shadow: inset 0px 0px 5px 1px rgba(0,0,0,0.24);
+    -moz-box-shadow: inset 0px 0px 5px 1px rgba(0,0,0,0.24);
+    box-shadow: inset 0px 0px 5px 1px rgba(0, 0, 0, 0.24);
+  }
   &.selected {
     border : 1px solid red;
   }
 }
 
-.game-scoreboard {
-  position : fixed;
-  padding-left: 10px;
-  ul.game-scoreboard-listing{
 
+.game-right {
+  display: inline-block;
+  vertical-align: top;
+}
+
+.game-scoreboard {
+  ul.game-scoreboard-listing{
   }
 }
 
