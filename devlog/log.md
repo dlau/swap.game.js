@@ -54,6 +54,20 @@ demo: https://www.youtube.com/watch?v=fHRo-TdXaTg
     - no animation
     - just want to practice some algorithms, don't optimize/pixel push anything
 
+**time: 2hrs**
 ===
 #END DAY 0
 ===
+
+===
+#DAY 2
+===
+implementation specifics:
+  fixed grid, animate with callbacks and a setTimeout
+  rudimentary counter
+  delete neighboring elements after swapping
+
+need:
+  fade when removing color?
+  avalanche
+  winning condition

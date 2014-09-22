@@ -47,6 +47,7 @@
     "style-loader": "~0.8.0",
     "css-loader": "~0.8.0",
     "less": "~1.7.5",
-    "less-loader": "~0.7.7"
+    "less-loader": "~0.7.7",
+    "jquery": "~2.1.1"
   }
 }
