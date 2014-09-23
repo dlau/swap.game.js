@@ -1,0 +1,7 @@
+module.exports = {
+  GRID_ELEMENT_WIDTH : 30,
+  GRID_WIDTH : 10,
+  GRID_HEIGHT : 15,
+  DEFAULT_ANIMATION_DURATION : 500,
+};
+
